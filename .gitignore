@@ -1,6 +1,38 @@
-**/target/
-.idea
+# Maven 编译输出
+target/
+*.jar
+*.war
+*.ear
+
+# IDEA 配置文件
+.idea/
 *.iml
-*.class
+*.iws
+*.ipr
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+*.db
+
+# 日志
+logs/
+*.log
+
+# 敏感配置文件（绝对不能提交！）
+application-dev.yml
+application-prod.yml
+application-local.yml
+*.local.yml
+bootstrap.yml
+
+# 数据库配置、密钥、密码文件
+*.properties
+*.key
+*.pem
+password.txt
+secret.txt
+
+# 测试相关
 *Test.java
-**/test/
+*TestCase.java
