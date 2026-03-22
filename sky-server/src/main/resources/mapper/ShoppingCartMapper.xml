@@ -8,6 +8,17 @@
                     VALUES (#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{number},#{amount},#{createTime})
     </insert>
 
+<!--    更新商品信息-->
+    <update id="updateByUserId">
+        update shopping_cart set number = #{number}
+        <where>
+            <if test="userId!=null"> and user_id=#{userId}</if>
+            <if test="dishId!=null"> and dish_id=#{dishId}</if>
+            <if test="setmealId!=null"> and setmeal_id=#{setmealId}</if>
+            <if test="dishFlavor!=null"> and dish_flavor=#{dishFlavor}</if>
+        </where>
+    </update>
+
     <!--    查询是否存在-->
     <select id="find" resultType="com.sky.entity.ShoppingCart">
         select * from shopping_cart
@@ -18,5 +29,21 @@
             <if test="dishFlavor!=null"> and dish_flavor=#{dishFlavor}</if>
         </where>
     </select>
+
+<!--    查看购物车-->
+    <select id="getByUserId" resultType="com.sky.entity.ShoppingCart">
+        select * from shopping_cart where user_id = #{userId}
+    </select>
+
+<!--    删除一个商品-->
+    <delete id="deleteOne">
+        delete from shopping_cart
+        <where>
+            <if test="userId!=null"> and user_id=#{userId}</if>
+            <if test="setmealId!=null"> and setmeal_id=#{setmealId}</if>
+            <if test="dishId!=null"> and dish_id=#{dishId}</if>
+            <if test="dishFlavor!=null"> and dish_flavor=#{dishFlavor}</if>
+        </where>
+    </delete>
 
 </mapper>
