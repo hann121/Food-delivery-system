@@ -8,5 +8,92 @@
         VALUES (#{number}, #{status}, #{userId}, #{addressBookId}, #{orderTime}, #{checkoutTime}, #{payMethod}, #{payStatus}, #{amount}, #{remark}, #{phone}, #{address}, #{userName}, #{consignee}, #{cancelReason}, #{rejectionReason}, #{cancelTime}, #{estimatedDeliveryTime}, #{deliveryStatus}, #{deliveryTime}, #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
 
+<!--    支付后-->
+    <update id="pay">
+        update orders
+        <set>
+            status = 2 ,
+            pay_status = 1,
+            checkout_time = NOW()
+        </set>
+        where number = #{orderNumber}
+    </update>
+
+<!--    拒绝接单-->
+    <update id="reject">
+        update orders
+        <set>
+            rejection_reason = #{rejectionReason},
+            status = 7,
+            pay_status = 2,
+            cancel_time = NOW()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--   查询历史订单 -->
+    <select id="findByPage" resultType="com.sky.entity.Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number!=''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone!=''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
+
+    <select id="pageQuery" resultType="Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number!=''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone!=''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
+
+<!--    根据id查询详情-->
+    <select id="getDetailById" resultType="com.sky.entity.Orders">
+        select * from orders where id = #{id}
+    </select>
+
+<!--    取消订单-->
+    <delete id="cancelOrder">
+        update orders set status = 6,cancel_time =NOW() where id = #{id}
+    </delete>
+
+
+
+
 
 </mapper>
