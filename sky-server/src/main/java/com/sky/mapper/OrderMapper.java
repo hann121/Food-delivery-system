@@ -10,6 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Mapper
 public interface OrderMapper {
 
@@ -52,4 +55,9 @@ public interface OrderMapper {
 
     @Update("update orders set status = 5 , delivery_time = NOW()+INTERVAL 1 HOUR where id = #{id}")
     void complete(Long id);
+
+    @Select("select * from orders where status = #{status} and order_time < #{orderTime} ")
+    List<Orders> getByStatusAndOrderTime(Integer status, LocalDateTime orderTime);
+
+    void update(Orders order);
 }
