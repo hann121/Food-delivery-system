@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -10,6 +11,7 @@ import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
+import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderDetailMapper;
@@ -21,6 +23,7 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.vo.SetmealVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -28,7 +31,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +47,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private AddressBookMapper addressBookMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     //    用户下单
     @Override
@@ -101,6 +108,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void pay(String orderNumber) {
         orderMapper.pay(orderNumber);
+        Orders order = orderMapper.getOrderByNumber(orderNumber);
+        //通过websocket向客户端推送消息（json格式
+        Map map = new HashMap();
+        map.put("type",1);//1表示来单提醒，2表示催单
+        map.put("orderId",order.getId());
+        map.put("content","订单号:"+orderNumber);
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
+
     }
 
 //    /*
@@ -321,6 +338,27 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void complete(Long id) {
         orderMapper.complete(id);
+    }
+
+
+    /*
+    * 用户催单
+    * */
+    @Override
+    public void remind(Long id) {
+        Orders order = orderMapper.getDetailById(id);
+        //不存在则抛异常
+        if(order == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //通过webwocket向后端传递json信息
+        Map map = new HashMap();
+        map.put("type",2);//催单
+        map.put("orderId",order.getId());
+        map.put("content","订单号:"+order.getNumber());
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+
     }
 
 

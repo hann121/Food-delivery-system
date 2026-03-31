@@ -18,7 +18,7 @@ public class OrderTask {
     private OrderMapper orderMapper;
 
 
-    @Scheduled(cron = "0 * * * * ? ")
+    @Scheduled(cron = "0 0/15 * * * ? ")
     public void processTimeroutOrder(){
         log.info("定时处理未支付订单:{}", LocalDateTime.now());
 

@@ -60,4 +60,7 @@ public interface OrderMapper {
     List<Orders> getByStatusAndOrderTime(Integer status, LocalDateTime orderTime);
 
     void update(Orders order);
+
+    @Select("select * from orders where number = #{number}")
+    Orders getOrderByNumber(String number);
 }

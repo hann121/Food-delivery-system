@@ -12,6 +12,7 @@ import com.sky.vo.OrderVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -87,6 +88,14 @@ public class OrderController {
     @PostMapping("/repetition/{id}")
     public Result repetition(@PathVariable Long id) {
         orderService.repetition(id);
+        return Result.success();
+    }
+
+    @GetMapping("/reminder/{id}")
+    public Result remind(@PathVariable Long id){
+        log.info("用户催单:{}",id);
+
+        orderService.remind(id);
         return Result.success();
     }
 
