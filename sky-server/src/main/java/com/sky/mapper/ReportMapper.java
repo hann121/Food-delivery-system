@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.dto.GoodsSalesDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,4 +20,13 @@ public interface ReportMapper {
 
     @Select("select count(id) from user where create_time between #{cur} and #{tomorrow}")
     Integer countTotalUserNum(LocalDateTime cur, LocalDateTime tomorrow);
+
+    @Select("select count(*) from orders where order_time between #{cur} and #{tomorrow}")
+    Integer countAllOrder(LocalDateTime cur, LocalDateTime tomorrow);
+
+    @Select("select count(*) from orders where order_time between #{cur} and #{tomorrow} and status = 5 ")
+    Integer countOrder(LocalDateTime cur, LocalDateTime tomorrow);
+
+
+    List<GoodsSalesDTO> findTop10(LocalDateTime begins,LocalDateTime ends);
 }

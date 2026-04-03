@@ -11,4 +11,16 @@
           and order_time &lt; #{ends}
     </select>
 
+<!--  统计销量top10  -->
+    <select id="findTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name, sum(od.number) as number
+        from orders o, order_detail od
+        where o.id = od.order_id
+          and o.status = 5
+          and o.order_time between #{begins} and #{ends}
+        group by od.name
+        order by sum(od.number) desc
+        limit 10
+    </select>
+
 </mapper>
